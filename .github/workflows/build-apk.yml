@@ -1,0 +1,33 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cài Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build APK (debug – cài thẳng lên điện thoại)
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Tải APK lên mục Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MediaPlayerPro-apk
+          path: app/build/outputs/apk/debug/*.apk
