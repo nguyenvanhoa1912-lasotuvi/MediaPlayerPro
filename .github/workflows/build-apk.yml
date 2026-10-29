@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,8 +29,20 @@ jobs:
       - name: Build APK (debug – cài thẳng lên điện thoại)
         run: gradle :app:assembleDebug --stacktrace
 
+      - name: Đổi tên APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk MediaPlayerPro.apk
+
       - name: Tải APK lên mục Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: MediaPlayerPro-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: MediaPlayerPro.apk
+
+      - name: Đăng APK lên Releases (link tải trực tiếp)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest MediaPlayerPro.apk \
+            --title "Media Player Pro – bản mới nhất" \
+            --notes "Build tự động từ commit ${GITHUB_SHA::7}. Tải MediaPlayerPro.apk và cài trực tiếp trên điện thoại."
