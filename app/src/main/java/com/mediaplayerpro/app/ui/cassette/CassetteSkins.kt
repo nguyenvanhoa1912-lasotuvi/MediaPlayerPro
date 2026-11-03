@@ -55,25 +55,25 @@ private val BOOMBOX_TAPE = CassetteLook(
 @Composable
 fun BoomboxFace(ui: DeckUi, anim: DeckAnim) {
     val tm = rememberTextMeasurer()
-    Canvas(Modifier.fillMaxWidth().aspectRatio(1.18f)) {
+    Canvas(Modifier.fillMaxWidth().aspectRatio(1.0f)) {
         val w = size.width
         val h = size.height
         val dark = Color(0xFF2B2F36)
-        label(tm, "STEREO RADIO CASSETTE RECORDER", Offset(w * 0.035f, h * 0.045f), w * 0.028f, dark, FontWeight.Bold, align = -1, spacing = w * 0.003f)
-        label(tm, "4 BAND • 2 WAY", Offset(w * 0.965f, h * 0.045f), w * 0.024f, Color(0xFF59606B), FontWeight.Bold, align = 1)
+        label(tm, "STEREO RADIO CASSETTE RECORDER", Offset(w * 0.035f, h * 0.035f), w * 0.03f, dark, FontWeight.Bold, align = -1, spacing = w * 0.003f)
+        label(tm, "4 BAND • 2 WAY", Offset(w * 0.965f, h * 0.035f), w * 0.026f, Color(0xFF59606B), FontWeight.Bold, align = 1)
 
         // Mặt dò đài: kim đỏ chạy theo tiến độ bài
-        val dial = Rect(w * 0.035f, h * 0.085f, w * 0.965f, h * 0.2f)
+        val dial = Rect(w * 0.035f, h * 0.07f, w * 0.965f, h * 0.17f)
         drawRoundRect(Color(0xFF14171B), dial.topLeft, dial.size, CornerRadius(h * 0.015f))
         val sx0 = dial.left + dial.width * 0.08f
         val sx1 = dial.right - dial.width * 0.08f
         for (i in 0..40) {
             val x = sx0 + (sx1 - sx0) * i / 40f
             val long = i % 8 == 0
-            drawLine(Color(0xFFE6E1D3), Offset(x, dial.top + dial.height * 0.18f), Offset(x, dial.top + dial.height * (if (long) 0.42f else 0.3f)), w * 0.002f)
-            if (long) label(tm, "${88 + i / 2}", Offset(x, dial.top + dial.height * 0.62f), dial.height * 0.24f, Color(0xFFE6E1D3), FontWeight.Bold)
+            drawLine(Color(0xFFE6E1D3), Offset(x, dial.top + dial.height * 0.16f), Offset(x, dial.top + dial.height * (if (long) 0.42f else 0.3f)), w * 0.002f)
+            if (long) label(tm, "${88 + i / 2}", Offset(x, dial.top + dial.height * 0.64f), dial.height * 0.26f, Color(0xFFE6E1D3), FontWeight.Bold)
         }
-        label(tm, "FM", Offset(dial.left + dial.width * 0.035f, dial.center.y), dial.height * 0.26f, Color(0xFFFFB74D), FontWeight.Black)
+        label(tm, "FM", Offset(dial.left + dial.width * 0.035f, dial.center.y), dial.height * 0.28f, Color(0xFFFFB74D), FontWeight.Black)
         label(tm, "MHz", Offset(dial.right - dial.width * 0.035f, dial.center.y), dial.height * 0.2f, Color(0xFFFFB74D), FontWeight.Bold)
         val px = sx0 + (sx1 - sx0) * ui.progress
         drawLine(Color(0xFFFF3D00), Offset(px, dial.top + dial.height * 0.08f), Offset(px, dial.bottom - dial.height * 0.08f), w * 0.005f)
@@ -82,41 +82,63 @@ fun BoomboxFace(ui: DeckUi, anim: DeckAnim) {
             dial.topLeft, Size(dial.width, dial.height / 2)
         )
 
-        // Hai loa
-        val spR = w * 0.14f
-        val spY = h * 0.6f
-        drawSpeaker(Offset(w * 0.165f, spY), spR, anim.bass)
-        drawSpeaker(Offset(w * 0.835f, spY), spR, anim.bass)
-
-        // Cặp đồng hồ VU
-        val vuW = w * 0.17f
+        // Cặp đồng hồ VU (to hơn)
+        val vuW = w * 0.235f
         val vuH = vuW * 0.64f
-        val vuTop = h * 0.245f
+        val vuTop = h * 0.195f
         val face = Brush.verticalGradient(listOf(Color(0xFFFFE9A8), Color(0xFFF4C35A)))
-        drawVuMeter(Rect(w * 0.5f - vuW - w * 0.006f, vuTop, w * 0.5f - w * 0.006f, vuTop + vuH), anim.needleL, tm, face, Color(0xFF2A1E0A), Color(0xFF1B1D21), "L")
-        drawVuMeter(Rect(w * 0.5f + w * 0.006f, vuTop, w * 0.5f + vuW + w * 0.006f, vuTop + vuH), anim.needleR, tm, face, Color(0xFF2A1E0A), Color(0xFF1B1D21), "R")
+        drawVuMeter(Rect(w * 0.5f - vuW - w * 0.008f, vuTop, w * 0.5f - w * 0.008f, vuTop + vuH), anim.needleL, tm, face, Color(0xFF2A1E0A), Color(0xFF1B1D21), "L")
+        drawVuMeter(Rect(w * 0.5f + w * 0.008f, vuTop, w * 0.5f + vuW + w * 0.008f, vuTop + vuH), anim.needleR, tm, face, Color(0xFF2A1E0A), Color(0xFF1B1D21), "R")
 
-        // Cửa khay băng
-        val door = Rect(w * 0.315f, vuTop + vuH + h * 0.025f, w * 0.685f, vuTop + vuH + h * 0.025f + h * 0.29f)
+        // Cửa khay băng (to hơn)
+        val doorTop = vuTop + vuH + h * 0.04f
+        val door = Rect(w * 0.255f, doorTop, w * 0.745f, doorTop + h * 0.335f)
         drawRoundRect(Color(0xFF5C626B), door.topLeft, door.size, CornerRadius(w * 0.02f))
-        val glass = door.deflate(w * 0.008f)
+        val glass = door.deflate(w * 0.009f)
         drawRoundRect(Color(0xFF15181C), glass.topLeft, glass.size, CornerRadius(w * 0.015f))
-        val tw = glass.width * 0.9f
+        val tw = glass.width * 0.92f
         tape(ui, anim, BOOMBOX_TAPE, glass.center.x - tw / 2, glass.center.y - tw * 0.635f / 2, tw, tm)
-        drawRoundRect(Color.White.copy(alpha = 0.07f), glass.topLeft, Size(glass.width, glass.height * 0.45f), CornerRadius(w * 0.015f))
-        label(tm, "▲ EJECT", Offset(door.center.x, door.top - h * 0.012f), w * 0.02f, dark, FontWeight.Bold)
+        drawRoundRect(Color.White.copy(alpha = 0.07f), glass.topLeft, Size(glass.width, glass.height * 0.42f), CornerRadius(w * 0.015f))
+        label(tm, "▲ EJECT", Offset(door.center.x, door.top - h * 0.018f), w * 0.022f, dark, FontWeight.Bold)
 
-        // Bộ đếm + công tắc chức năng
-        val ctr = Rect(w * 0.36f, door.bottom + h * 0.03f, w * 0.52f, door.bottom + h * 0.1f)
+        // Loa trầm hai bên cửa băng + loa tweeter phía trên
+        val spR = w * 0.118f
+        drawSpeaker(Offset(w * 0.128f, door.center.y), spR, anim.bass)
+        drawSpeaker(Offset(w * 0.872f, door.center.y), spR, anim.bass)
+        val twY = vuTop + vuH / 2
+        drawSpeaker(Offset(w * 0.128f, twY), w * 0.055f, anim.bass * 0.4f)
+        drawSpeaker(Offset(w * 0.872f, twY), w * 0.055f, anim.bass * 0.4f)
+
+        // Hàng dưới: VOLUME – bộ đếm – công tắc – TONE
+        val rowY = door.bottom + h * 0.06f
+        fun slider(cx: Float, name: String, pos: Float) {
+            val track = Rect(cx - w * 0.1f, rowY - h * 0.008f, cx + w * 0.1f, rowY + h * 0.008f)
+            drawRoundRect(Color(0xFF1B1D21), track.topLeft, track.size, CornerRadius(track.height / 2))
+            for (i in 0..10) {
+                val x = track.left + track.width * i / 10f
+                drawLine(dark.copy(alpha = 0.5f), Offset(x, track.bottom + h * 0.012f), Offset(x, track.bottom + h * (if (i % 5 == 0) 0.026f else 0.018f)), w * 0.002f)
+            }
+            val kx = track.left + track.width * pos
+            drawRoundRect(
+                Brush.verticalGradient(listOf(Color(0xFFF7F8FA), Color(0xFF9DA3AB)), rowY - h * 0.03f, rowY + h * 0.03f),
+                Offset(kx - w * 0.018f, rowY - h * 0.03f), Size(w * 0.036f, h * 0.06f), CornerRadius(w * 0.006f)
+            )
+            drawLine(dark, Offset(kx, rowY - h * 0.02f), Offset(kx, rowY + h * 0.02f), w * 0.004f)
+            label(tm, name, Offset(cx, rowY + h * 0.062f), w * 0.022f, dark, FontWeight.Bold)
+        }
+        slider(w * 0.14f, "VOLUME", 0.7f)
+        slider(w * 0.86f, "TONE", 0.5f)
+
+        val ctr = Rect(w * 0.31f, rowY - h * 0.042f, w * 0.49f, rowY + h * 0.042f)
         drawCounter(ctr, counterOf(ui), tm)
-        label(tm, "COUNTER", Offset(ctr.center.x, ctr.bottom + h * 0.025f), w * 0.018f, dark, FontWeight.Bold)
-        val sw = Rect(w * 0.55f, ctr.top + ctr.height * 0.2f, w * 0.65f, ctr.bottom - ctr.height * 0.2f)
+        label(tm, "COUNTER", Offset(ctr.center.x, rowY + h * 0.062f), w * 0.022f, dark, FontWeight.Bold)
+        val sw = Rect(w * 0.54f, rowY - h * 0.02f, w * 0.68f, rowY + h * 0.02f)
         drawRoundRect(Color(0xFF1B1D21), sw.topLeft, sw.size, CornerRadius(sw.height / 2))
         drawRoundRect(Color(0xFFE0E3E7), Offset(sw.right - sw.width * 0.5f, sw.top), Size(sw.width * 0.5f, sw.height), CornerRadius(sw.height / 2))
-        label(tm, "RADIO", Offset(sw.left + sw.width * 0.25f, sw.bottom + h * 0.025f), w * 0.016f, dark)
-        label(tm, "TAPE", Offset(sw.right - sw.width * 0.25f, sw.bottom + h * 0.025f), w * 0.016f, Color(0xFFD84315), FontWeight.Bold)
+        label(tm, "RADIO", Offset(sw.left + sw.width * 0.25f, rowY + h * 0.062f), w * 0.02f, dark)
+        label(tm, "TAPE", Offset(sw.right - sw.width * 0.25f, rowY + h * 0.062f), w * 0.02f, Color(0xFFD84315), FontWeight.Bold)
 
-        drawBrushed(Rect(0f, h * 0.9f, w, h), 0.08f)
+        drawBrushed(Rect(0f, h * 0.95f, w, h), 0.08f)
     }
 }
 
