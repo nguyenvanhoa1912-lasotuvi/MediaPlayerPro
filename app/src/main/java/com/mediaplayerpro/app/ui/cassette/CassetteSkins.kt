@@ -175,7 +175,6 @@ fun DeckFace(ui: DeckUi, anim: DeckAnim) {
             drawCircle(if (i == 0) Color(0xFFFFB300) else Color(0xFF3A2A05), w * 0.01f, Offset(cx, ctr.center.y - h * 0.012f))
             label(tm, t, Offset(cx, ctr.center.y + h * 0.022f), w * 0.02f, silver, FontWeight.Bold)
         }
-        label(tm, "TAPE", Offset(w * 0.62f, ctr.top - h * 0.012f), w * 0.018f, silver.copy(alpha = 0.7f))
     }
 }
 

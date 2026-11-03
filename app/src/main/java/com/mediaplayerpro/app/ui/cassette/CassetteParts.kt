@@ -103,10 +103,10 @@ internal fun packRadii(progress: Float): Pair<Float, Float> {
     return sqrt(r0 * r0 + area * (1f - p)) to sqrt(r0 * r0 + area * p)
 }
 
-/** RMS (0..1) -> vị trí kim (0..1). 0 VU ≈ -10 dBFS. */
+/** RMS (0..1) -> vị trí kim (0..1). 0 VU ≈ -16 dBFS (nhạy hơn, hợp nhạc phổ thông). */
 internal fun vuPos(rms: Float): Float {
     val db = 20f * log10(max(rms, 1e-5f))
-    return ((db + 30f) / 23f).coerceIn(0f, 1.04f)
+    return ((db + 36f) / 23f).coerceIn(0f, 1.04f)
 }
 
 /**
