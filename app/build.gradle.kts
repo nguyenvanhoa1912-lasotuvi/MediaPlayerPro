@@ -12,12 +12,27 @@ android {
         applicationId = "com.mediaplayerpro.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
+        // Mỗi lần GitHub build tự tăng số phiên bản
+        versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
         versionName = "1.0.0"
     }
 
+    // Khoá ký cố định: mọi bản build có cùng chữ ký -> cài đè được, không phải gỡ app
+    signingConfigs {
+        create("fixed") {
+            storeFile = file("signing/mpp.jks")
+            storePassword = "mpp2febc09acbfd046c"
+            keyAlias = "mpp"
+            keyPassword = "mpp2febc09acbfd046c"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("fixed")
+        }
         release {
+            signingConfig = signingConfigs.getByName("fixed")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
