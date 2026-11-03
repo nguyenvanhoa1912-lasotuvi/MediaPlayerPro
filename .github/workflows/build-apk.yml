@@ -27,7 +27,20 @@ jobs:
           gradle-version: "8.9"
 
       - name: Build APK (debug – cài thẳng lên điện thoại)
-        run: gradle :app:assembleDebug --stacktrace
+        run: |
+          set -o pipefail
+          gradle :app:assembleDebug 2>&1 | tee build.log
+
+      - name: Báo lỗi biên dịch (nếu có)
+        if: failure()
+        run: |
+          grep -E "^e: |error:|What went wrong|Could not|FAILED" build.log | head -60 > errors.txt || true
+          [ -s errors.txt ] || tail -60 build.log > errors.txt
+          i=0
+          while IFS= read -r line; do
+            i=$((i+1)); [ $i -gt 45 ] && break
+            echo "::error::${line//%/%25}"
+          done < errors.txt
 
       - name: Đổi tên APK
         run: cp app/build/outputs/apk/debug/app-debug.apk MediaPlayerPro.apk

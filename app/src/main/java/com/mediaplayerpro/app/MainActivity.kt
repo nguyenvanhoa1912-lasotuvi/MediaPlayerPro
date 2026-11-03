@@ -27,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mediaplayerpro.app.ui.MainViewModel
 import com.mediaplayerpro.app.ui.Screen
 import com.mediaplayerpro.app.ui.screens.LibraryScreen
-import com.mediaplayerpro.app.ui.screens.NowPlayingScreen
+import com.mediaplayerpro.app.ui.screens.PlayerHost
 import com.mediaplayerpro.app.ui.screens.VideoScreen
 import com.mediaplayerpro.app.ui.theme.AppColors
 import com.mediaplayerpro.app.ui.theme.MediaPlayerProTheme
@@ -150,7 +150,7 @@ private fun AppRoot(
         Crossfade(targetState = screen, label = "screen") { s ->
             when (s) {
                 Screen.LIBRARY -> LibraryScreen(vm, onRequestPermission, onOpenSettings)
-                Screen.NOW_PLAYING -> NowPlayingScreen(vm)
+                Screen.NOW_PLAYING -> PlayerHost(vm)
                 Screen.VIDEO -> VideoScreen(vm, onEnterPip)
             }
         }

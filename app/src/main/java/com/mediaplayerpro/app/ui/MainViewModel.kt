@@ -1,6 +1,7 @@
 package com.mediaplayerpro.app.ui
 
 import android.app.Application
+import android.content.Context
 import android.content.ComponentName
 import android.database.ContentObserver
 import android.net.Uri
@@ -22,6 +23,7 @@ import androidx.media3.session.SessionToken
 import com.mediaplayerpro.app.data.MediaFile
 import com.mediaplayerpro.app.data.MediaRepository
 import com.mediaplayerpro.app.playback.PlaybackService
+import com.mediaplayerpro.app.ui.cassette.PlayerSkin
 import com.mediaplayerpro.app.ui.util.foldVi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -67,6 +69,18 @@ data class PlayerUiState(
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repo = MediaRepository(app)
+    private val prefs = app.getSharedPreferences("mpp_settings", Context.MODE_PRIVATE)
+
+    /** Giao diện màn hình Đang phát (lưu lại giữa các lần mở app). */
+    val skin = MutableStateFlow(
+        runCatching { PlayerSkin.valueOf(prefs.getString("skin", null) ?: PlayerSkin.BOOMBOX.name) }
+            .getOrDefault(PlayerSkin.BOOMBOX)
+    )
+
+    fun setSkin(value: PlayerSkin) {
+        skin.value = value
+        prefs.edit().putString("skin", value.name).apply()
+    }
     private val collator = Collator.getInstance(Locale("vi", "VN"))
 
     private val _audio = MutableStateFlow<List<MediaFile>>(emptyList())
@@ -277,6 +291,28 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun pause() { _controller.value?.pause() }
+
+    fun play() {
+        val c = _controller.value ?: return
+        if (!c.isPlaying) togglePlayPause()
+    }
+
+    /** Phím STOP: dừng và tua về đầu bài. */
+    fun stop() {
+        val c = _controller.value ?: return
+        c.pause()
+        c.seekTo(0L)
+        _position.value = 0L
+    }
+
+    /** Tua tương đối (phím REW / FF). */
+    fun seekBy(deltaMs: Long) {
+        val c = _controller.value ?: return
+        val dur = c.duration.takeIf { it != C.TIME_UNSET && it > 0 } ?: Long.MAX_VALUE
+        val target = (c.currentPosition + deltaMs).coerceIn(0L, (dur - 500L).coerceAtLeast(0L))
+        c.seekTo(target)
+        _position.value = target
+    }
     fun next() { _controller.value?.seekToNext() }
     fun previous() { _controller.value?.seekToPrevious() }
 
